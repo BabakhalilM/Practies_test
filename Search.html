@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <label for=""> Search Animals: </label>
+        <input id="search" type="text" placeholder="search Box"/>
+    </div>
+    <h4>Result</h4>
+    <div id="result" style="border: 1px solid;"></div>
+</body>
+</html>
+<script>
+    
+    const data = ["cow","cat",
+    "Lion", "Tiger", "Elephant", "Giraffe", "Zebra", 
+    "Kangaroo", "Penguin", "Panda", "Leopard", "Cheetah", 
+    "Rhinoceros", "Hippopotamus", "Koala", "Gorilla", "Monkey", 
+    "Eagle", "Falcon", "Shark", "Dolphin", "Whale", 
+    "Octopus", "Turtle", "Crocodile", "Wolf", "Fox", 
+    "Deer", "Rabbit", "Squirrel", "Bear", "Otter"
+];
+
+    function debounce(func,delay){
+        let timer;
+        return function(...args){
+            clearTimeout(timer);
+            timer=setTimeout(()=>{
+                func.apply(this,args);
+            },delay);
+        }
+    }
+    function fetchdata(input){
+
+        return new Promise((resolve,reject)=>{
+            setTimeout(()=>{
+                const filterdata=data.filter(item=> 
+                item.toLowerCase().includes(input)
+            );
+            resolve(filterdata);
+            },200);
+        });
+
+    }
+    async function handlesearch(e){
+        const userinput=e.target.value.toLowerCase();
+
+        if(userinput.trim() !==""){
+            const response= await fetchdata(userinput);
+            console.log(response);
+            const resultcontainer=document.getElementById('result');
+            resultcontainer.innerHTML="";
+            if(response.length>0){
+                response.forEach(element => {
+                    const p=document.createElement('p');
+                    p.innerText=element;
+                    resultcontainer.appendChild(p);
+                });
+            }else{
+                resultcontainer.innerText="No Result Found..."
+            }           
+        }else{
+            document.getElementById('result').innerHTML='';
+        }
+    }
+    
+    const debouncesearch=debounce(handlesearch,500);
+
+
+    const searchinput=document.getElementById("search");
+    searchinput.addEventListener('input',debouncesearch);
+    
+</script>
